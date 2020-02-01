@@ -1,0 +1,170 @@
+<div class="sport-menu-container">
+    <div class="sport-menu-item">
+         <div (click)="open_vk()" class="sport-button"><div class="sport-button-inner"></div></div>
+    </div>
+
+    <div class="sport-menu-item sport-photo-block" *ngIf="!!vk_photo">
+        <img class="sport-photo" src="{{ vk_photo }}" />
+    </div>
+
+    <div
+        class="
+            sport-menu-item
+            sport-user-name
+        "
+    >Привет, {{user_name}}</div>
+</div>
+
+<div class="sport-auth-categories">
+    <div
+        [ngClass]="{'sport-auth-category-active': current_cat == 'my' && !user_info }"
+        class="sport-auth-category"
+        (click)="switch_category('my')"
+    >Мои</div>
+
+    <div
+        [ngClass]="{'sport-auth-category-active': current_cat == 'recommend' && !user_info }"
+        class="sport-auth-category"
+        (click)="switch_category('recommend')"
+    >Рекомендации</div>
+
+    <div
+        [ngClass]="{'sport-auth-category-active': current_cat == 'friends' && !user_info }"
+        class="sport-auth-category"
+        (click)="switch_category('friends')"
+    >Друзья</div>
+
+    <div
+        [ngClass]="{'sport-auth-category-active': current_cat == 'all' && !user_info }"
+        class="sport-auth-category"
+        (click)="switch_category('all')"
+    >Все</div>
+</div>
+
+<div class="sport-block-challenge" *ngIf="!!challenge_info">
+  <div class="sport-name">{{ challenge_info.name }}</div>
+  <div class="sport-locationn">{{ challenge_info.location }}</div>
+  <div class="sport-date">{{ challenge_info.date_str }}</div>
+  <div class="sport-distance">Дистанции:</div>
+  <ng-template ngFor let-it [ngForOf]="challenge_info.distance">
+      {{ it }}
+  </ng-template>
+</div>
+
+<div class="sport-user-block" *ngIf="!!user_info">
+    <div
+        class="
+            sport-menu-item
+            sport-photo-block"
+        *ngIf="!!vk_photo"
+    >
+        <img class="sport-photo sport-friend-photo" src="{{ user_info.photo }}" />
+    </div>
+
+    <div class="sport-menu-item">
+        <div
+            class="
+                sport-menu-item
+                sport-user-name
+                sport-user-page-name
+            "
+        >{{ user_info.name }}</div>
+
+
+        <div
+            class="
+                sport-button-flat
+                sport-add-friend
+            "
+            (click)="addFriend(user_info.id)"
+        >
+            {{ friendButtonText() }}
+        </div>
+    </div>
+</div>
+
+<div *ngIf="filters.length > 0" class="sport-filter-block">
+    <span class="sport-filters-cap">Фильтры:</span>
+    <ng-template ngFor let-flt [ngForOf]="filters">
+        <span
+            class="{{ 'sport-sport sport-sport-filter sport-sport-' + flt }}"
+            (click)="removeFilter(flt)"
+        >{{ get_russian(flt) }}
+        </span>
+    </ng-template>
+</div>
+
+<ng-template ngFor let-ch [ngForOf]="challenges">
+    <div class="sport-challenge">
+        <a href="/event/{{ch.id}}" class="sport-event-name">{{ch.name}}</a>
+        <span
+            class="{{ 'sport-sport sport-sport-' + ch.sport }}"
+            (click)="addFilter(ch.sport)"
+        >{{ get_russian(ch.sport) }}</span>
+
+        <div
+            *ngIf="!!ch.friends.length"
+            class="sport-friends"
+        >
+            <span class="sport-friends-cap">Участвуют:</span>
+            <ng-template ngFor let-f [ngForOf]="ch.show_users" let-i="index"
+                ><span
+                    *ngIf="!!i"
+                >, </span><a
+                    href="/user/{{f.id}}"
+                    class="sport-user"
+                >{{f.name}}</a></ng-template>
+        </div>
+
+        <div class="sport-date-block">
+            <span class="sport-date">{{ch.loc}}</span>
+            </div>
+        <div class="sport-date-block">
+            <span class="sport-date">{{ch.date_str}}</span>
+        </div>
+
+        <div class="sport-actions">
+            <img
+                src="/static/app/picture/reg.svg"
+                [ngClass]="{
+                    'sport-act-delete': true,
+                    'sport-act-not-selected': ch.part_type != 'registered'
+                }"
+                (click)="action(ch.id, 'registered')"
+            />
+
+            <img
+                src="/static/app/picture/heart.svg"
+                [ngClass]="{
+                    'sport-act-delete': true,
+                    'sport-act_left': true,
+                    'sport-act-not-selected': ch.part_type != 'like'
+                }"
+                (click)="action(ch.id, 'like')"
+            />
+
+            <img
+                src="/static/app/picture/block.svg"
+                [ngClass]="{
+                    'sport-act-delete': true,
+                    'sport-act_left': true,
+                    'sport-act-not-selected': ch.part_type != 'delete'
+                }"
+                (click)="action(ch.id, 'delete')"
+            />
+
+            <img
+                src="/static/app/picture/sell.svg"
+                [ngClass]="{
+                    'sport-act-delete': true,
+                    'sport-act_left': true,
+                    'sport-act-not-selected': ch.part_type != 'sell'
+                }"
+                (click)="action(ch.id, 'sell')"
+            />
+        </div>
+
+    </div>
+
+</ng-template>
+

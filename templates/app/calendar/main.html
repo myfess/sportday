@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <title>Sport calendar</title>
+        <base href="/">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta name="keywords" content="sport, calendar">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="{{ USATU_PATH }}/common/calendar.css" type="text/css" rel=stylesheet />
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/@angular/material@2.0.0-beta.7/prebuilt-themes/indigo-pink.css"
+            rel="stylesheet"
+        />
+
+        <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.2/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.js"></script>
+
+        {% if ES5  %}
+            <script src="https://cdn.jsdelivr.net/npm/rxjs@5.0.1/bundles/Rx.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/core-js@2.4.1/client/shim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/zone.js@0.8.12/dist/zone.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/systemjs@0.19.39/dist/system.js"></script>
+            <script src="{{ USATU_PATH }}/systemjs.config.js"></script>
+        {% endif %}
+
+        {% if TYPESCRIPT  %}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.1/Rx.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/shim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/zone.js/0.8.12/zone.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.39/system.src.js">
+            </script>
+            <script src="{{ USATU_PATH }}/systemjs-dev.config.js"></script>
+        {% endif %}
+
+    </head>
+
+    <body>
+        <script language=JavaScript>
+            var enabled_prod_mode = false;
+            var usatu_global_config = {
+                {{ ADDITIONAL_PARAMS | safe }}
+                'user_name': '{{ USER_LOGIN }}',
+                'user_id': '{{ USER_ID }}',
+                'avatar': {{ AVATAR }},
+                'enableProdMode': function () {
+                    if ({{ PRODUCTION_STR }}) {
+                        if (!enabled_prod_mode) {
+                            enabled_prod_mode = true;
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                'is_production': {{ PRODUCTION_STR }},
+                'is_editor': {{ IS_EDITOR_STR }},
+                'recaptcha': '{{ CAPTCHA_PUBLIC }}',
+                'captcha_on': {{ CFG_CAPTCHA_ON_STR }},
+                'VK_APP_ID' : '{{ VK_APP_ID }}',
+                'DOMEN': '{{ DOMEN }}'
+            };
+        </script>
+
+
+        <script>
+            System.import('{{ USATU_PATH }}/app/sport/sport').catch(
+                function (err) {console.error(err);}
+            );
+        </script>
+
+        <sport
+            user-name="{{ USER_NAME }}"
+
+            {% if CALENDAR_MEMBER_ID %}
+                member-id="{{ CALENDAR_MEMBER_ID }}"
+            {% endif %}
+
+            {% if CALENDAR_CHALLENGE_ID %}
+                challenge-id="{{ CALENDAR_CHALLENGE_ID }}"
+            {% endif %}
+
+            {% if VK_PHOTO %}
+                vk-photo="{{ VK_PHOTO }}"
+            {% endif %}
+
+            {% if SET_COOKIE_TOKEN %}
+                sid-token="{{ SET_COOKIE_TOKEN }}"
+            {% endif %}
+        ></sport>
+    </body>
+</html>

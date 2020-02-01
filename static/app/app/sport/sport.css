@@ -1,0 +1,215 @@
+.sport-menu-container {
+    display: flex;
+    margin-left: 5px;
+}
+
+.sport-menu-item {
+}
+
+.sport-user-name {
+    font-size: 1.2rem;
+    margin-left: 10px;
+}
+
+.sport-auth-categories {
+    white-space: nowrap;
+}
+
+.sport-auth-category {
+    cursor: pointer;
+    background-color: #E7EAED;
+    padding: 5px;
+    margin: 5px;
+    display: inline-block;
+}
+
+.sport-auth-category-active {
+    background-color: slategrey;
+    color: white;
+}
+
+
+.sport-button-inner {
+    margin-top: 5px;
+    margin-left: 6px;
+    width: 25px;
+    height: 25px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDI4IDI4Ij4gICAgPHBhdGggZmlsbD0iIzRCNzdBMSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTMuOTYzIDIxLjc2NGgxLjQ2MnMuNDQyLS4wNDguNjY3LS4yODljLjIwNy0uMjIuMi0uNjM2LjItLjYzNnMtLjAyOC0xLjk0My44ODItMi4yM2MuODk4LS4yODEgMi4wNSAxLjg4IDMuMjcxIDIuNzEuOTI0LjYyOCAxLjYyNS40OSAxLjYyNS40OWwzLjI2Ni0uMDQ1czEuNzA4LS4xMDQuODk4LTEuNDM1Yy0uMDY2LS4xMDktLjQ3Mi0uOTg0LTIuNDI4LTIuNzgzLTIuMDQ3LTEuODg0LTEuNzczLTEuNTc5LjY5My00LjgzNiAxLjUwMi0xLjk4NCAyLjEwMy0zLjE5NSAxLjkxNS0zLjcxNC0uMTc4LS40OTQtMS4yODMtLjM2My0xLjI4My0uMzYzbC0zLjY3Ny4wMjJzLS4yNzMtLjAzNi0uNDc1LjA4M2MtLjE5Ny4xMTgtLjMyNC4zOTEtLjMyNC4zOTFzLS41ODIgMS41MzUtMS4zNTggMi44NGMtMS42MzggMi43NTYtMi4yOTIgMi45MDEtMi41NiAyLjczLS42MjItLjM5OS0uNDY3LTEuNjAyLS40NjctMi40NTYgMC0yLjY3LjQwOS0zLjc4My0uNzk1LTQuMDctLjQtLjA5Ny0uNjk0LS4xNi0xLjcxNi0uMTctMS4zMTItLjAxMy0yLjQyMy4wMDQtMy4wNTEuMzEtLjQxOS4yMDItLjc0MS42NTUtLjU0NS42OC4yNDMuMDMzLjc5NC4xNDggMS4wODUuNTQxLjM3Ny41MDguMzY0IDEuNjQ5LjM2NCAxLjY0OXMuMjE2IDMuMTQyLS41MDYgMy41MzNjLS40OTUuMjY4LTEuMTc1LS4yOC0yLjYzNS0yLjc3OEEyMy4xMzcgMjMuMTM3IDAgMCAxIDcuMTYgOS4yNDNzLS4xMS0uMjY1LS4zMDMtLjQwNmMtLjIzNi0uMTcyLS41NjUtLjIyNi0uNTY1LS4yMjZsLTMuNDk0LjAyMnMtLjUyNS4wMTUtLjcxNy4yNGMtLjE3MS4yMDItLjAxNC42MTgtLjAxNC42MThzMi43MzYgNi4zNCA1LjgzMyA5LjUzNmMyLjg0IDIuOTMgNi4wNjQgMi43MzcgNi4wNjQgMi43Mzd6Ii8+PC9zdmc+");
+}
+
+.sport-button {
+    cursor: pointer;
+    border-style: solid;
+    border-radius: 20%;
+    border-color: steelblue;
+    border-width: 1px;
+    width: 40px;
+    height: 40px;
+}
+
+.sport-button:hover {
+    background-color: aliceblue;
+}
+
+.sport-challenge {
+    padding: 10px;
+}
+
+.sport-date {
+    font-size: small;
+    color: rgb(88, 96, 106);
+}
+
+.sport-sport {
+    cursor: pointer;
+    font-size: small;
+    color: white;
+    border-radius: 4px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.sport-sport-triathlon {
+    background-color: #8300FF;
+}
+
+.sport-sport-skyrunning {
+    background-color: seagreen;
+}
+
+.sport-sport-trail {
+    background-color: seagreen;
+}
+
+.sport-sport-bicycle {
+    background-color: #F2C300;
+}
+
+.sport-sport-run {
+    background-color: #6DC906;
+}
+
+.sport-sport-swim {
+    background-color: #0084EA;
+}
+
+.sport-sport-ski {
+    background-color: #F40629;
+}
+
+.sport-act-delete {
+    width: 24px;
+}
+
+.sport-act-not-selected {
+    opacity: .2;
+}
+
+.sport-actions {
+    margin-top: 6px;
+}
+
+.sport-act_left {
+    margin-left: 15px;
+}
+
+.sport-sport-filter {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.sport-filters-cap {
+    margin-left: 5px;
+    color: rgb(88, 96, 106);
+}
+
+.sport-filter-block {
+    background-color: lavender;
+    width: fit-content;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    margin-left: 5px;
+}
+
+.sport-photo-block {
+    margin-left: 5px;
+}
+
+.sport-photo {
+    border-radius: 50%;
+    width: 40px;
+}
+
+.sport-friends {
+
+}
+
+.sport-friends-cap {
+    font-size: 0.8rem;
+}
+
+.sport-user {
+    font-size: 0.8rem;
+    /* font-weight: 500; */
+    color: #2a5885;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sport-date-block {
+    margin-top: 3px;
+}
+
+.sport-user-block {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    /* background-color: gainsboro; */
+}
+
+.sport-user-page-name {
+    /* margin-top: 5px; */
+    font-weight: bold;
+}
+
+.sport-button-flat {
+    padding: 3px 5px 4px;
+    margin: 0;
+    font-size: 0.8rem;
+    display: inline-block;
+    zoom: 1;
+    cursor: pointer;
+    white-space: nowrap;
+    outline: none;
+    vertical-align: top;
+    text-align: center;
+    text-decoration: none;
+    background: none;
+    background-color: #5181b8;
+    color: #fff;
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.sport-friend-photo {
+    margin-top: 5px;
+}
+
+.sport-add-friend {
+    margin-left: 10px;
+}
+
+.sport-event-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2a5885;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sport-block-challenge {
+    margin-left: 10px;
+    margin-top: 10px;
+}
