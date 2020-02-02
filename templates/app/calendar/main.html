@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
     <head>
-        <title>Sport calendar</title>
+        <title>SportDay calendar</title>
         <base href="/">
         <meta http-equiv=Content-Type content="text/html; charset=utf-8">
         <meta name="keywords" content="sport, calendar">
@@ -41,9 +41,6 @@
             var enabled_prod_mode = false;
             var usatu_global_config = {
                 {{ ADDITIONAL_PARAMS | safe }}
-                'user_name': '{{ USER_LOGIN }}',
-                'user_id': '{{ USER_ID }}',
-                'avatar': {{ AVATAR }},
                 'enableProdMode': function () {
                     if ({{ PRODUCTION_STR }}) {
                         if (!enabled_prod_mode) {
@@ -54,11 +51,9 @@
                     return false;
                 },
                 'is_production': {{ PRODUCTION_STR }},
-                'is_editor': {{ IS_EDITOR_STR }},
-                'recaptcha': '{{ CAPTCHA_PUBLIC }}',
-                'captcha_on': {{ CFG_CAPTCHA_ON_STR }},
                 'VK_APP_ID' : '{{ VK_APP_ID }}',
-                'DOMEN': '{{ DOMEN }}'
+                'SPORT_DOMEN': '{{ SPORT_DOMEN }}',
+                'SPORT_ROOT_PATH': '{{ SPORT_ROOT_PATH }}'
             };
         </script>
 

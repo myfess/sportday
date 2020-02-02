@@ -1,19 +1,45 @@
 from app import auth
 from app import mydb
 
+
 def get_friends_challenges_map(member_id):
+    """
+    Get challenges with friends of user
+
+    Args:
+        member_id: int, user id
+
+    Returns:
+        dict: challenges map
+            key: int, challenge id
+            value:
+                dict: user
+                    id: int, user id
+                    name: str, social network name
+    """
+
     db = mydb.MyDB()
+
     rs = db.SqlQuery(db.sql('sport/challenges_list_friends'), {
-        'member_id': member_id,
-        'filters': []
+        'friends': get_friends_list(member_id)
     })
     ds = {}
     for r in rs:
-        ds[r['id']] = r.get('friends') or []
+        ds[r['challenge_id']] = r.get('friends') or []
     return ds
 
 
 def get_friends_list(member_id):
+    """
+    Get friend's list
+
+    Args:
+        member_id: int, user id
+
+    Returns:
+        List[int]: list of friend's user ids
+    """
+
     db = mydb.MyDB()
     friends = db.SqlQueryScalar(db.sql('sport/friend_list'), {
         'member_id': member_id
@@ -29,13 +55,20 @@ def set_friend_status(params, request):
     if status != 'friend':
         status = 'deleted'
 
-    user = auth.MyUser(request)
+    res = {
+        'friend_status': status
+    }
+
+    user = auth.MyUser(request, force=True)
+    if user.set_sid:
+        res['sid'] = user.set_sid
+
     db = mydb.MyDB()
 
-    user = db.SqlQueryRecord(db.sql('sport/friend_set_status'), {
+    db.SqlQueryRecord(db.sql('sport/friend_set_status'), {
         'member_id': user.get_user_id(),
         'friend_id': friend_id,
         'status': status
     })
 
-    return {'friend_status': status}
+    return res

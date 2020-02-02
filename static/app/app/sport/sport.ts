@@ -66,9 +66,13 @@ export class VkAuthComponent implements OnInit {
         }
     }
 
+    isTabActive(cat) {
+        return (this.current_cat == cat && !this.user_info && !this.challenge_id);
+    }
+
     ngOnInit(): void {
         if (this.sid_token !== null) {
-            $.cookie('usatu_auth', this.sid_token, { expires : 90, path: '/' });
+            this.setCookie(this.sid_token);
             document.location.href = this.get_domen_url();
             return;
         }
@@ -76,9 +80,22 @@ export class VkAuthComponent implements OnInit {
         this.getData();
     }
 
+
+    setCookie(sid) {
+        if (!sid) {
+            return;
+        }
+        $.cookie('usatu_auth', sid, { expires : 365, path: '/' });
+    }
+
+
     switch_category(cat) {
         this.user_info = null;
         this.member_id = null;
+
+        this.challenge_id = null;
+        this.challenge_info = null;
+
         this.current_cat = cat;
         this.getData();
     }
@@ -111,7 +128,7 @@ export class VkAuthComponent implements OnInit {
                 })
                     .then(res => this.challenges = res.challenges);
 
-            // Запросить инфу о пользователе
+            // Request user info
             this.rpcService.call(
                 'get_member_info',
                 {
@@ -123,7 +140,7 @@ export class VkAuthComponent implements OnInit {
 
             return;
         } else if (this.challenge_id) {
-            // Запросить инфу о старте
+            // Request challenge info
             this.rpcService.call(
                 'get_challenge_info',
                 {
@@ -163,7 +180,7 @@ export class VkAuthComponent implements OnInit {
     }
 
     action(challenge_id, action_type) {
-        // сохраняем старый статус для восстановления
+        // Save old status for restore
         let old_part_type = null;
         let is_set = true;
 
@@ -175,7 +192,7 @@ export class VkAuthComponent implements OnInit {
                     is_set = false;
                     ch.part_type = null;
                 } else {
-                    // Сразу устанавливаем новый статус
+                    // Set new status immediately
                     ch.part_type = action_type;
                 }
                 break;
@@ -203,46 +220,56 @@ export class VkAuthComponent implements OnInit {
         this.rpcService.call('set_friend_status',{
             'friend_id': friend_id,
             'status': new_status
-        }).then(res =>
-            this.user_info.friend_status = res.friend_status
-        );
+        }).then(res => {
+            this.user_info.friend_status = res.friend_status;
+            this.setCookie(res.sid);
+        });
     }
 
     friendButtonText() {
         if (this.user_info.friend_status == 'friend') {
-            return 'Удалить из друзья';
+            return 'Удалить из друзей';
         } else {
             return 'Добавить в друзья';
         }
     }
 
     handlerSetPartType(res, challenge_id, old_part_type) {
+        if (!!res.sid) {
+            this.setCookie(res.sid);
+        }
+
         if (!res.challenge_id) {
-            // Не удалось обновить - возвращаем обратно
+            // If update failed - return participation type back
             this.set_challenge_part_type(challenge_id, old_part_type);
         }
     }
 
     open_vk(): void {
+        let scope = 'friends';
+        scope += ',offline';
         let url = (
-            'https://oauth.vk.com/authorize?client_id=' +
-            this.get_vk_app_id() +
-            '&display=page&redirect_uri=' +
-            this.get_domen_url() +
-            '&scope=friends&response_type=code&v=5.103'
+            'https://oauth.vk.com/authorize?' +
+            'client_id=' + this._config.config().VK_APP_ID +
+            '&display=page' +
+            '&redirect_uri=' + this.get_domen_url() +
+            '&scope=' + scope +
+            '&response_type=code' +
+            '&v=5.103'
         );
         document.location.href = url;
     }
 
     get_domen_url(): string {
-        let domen = this._config.config().DOMEN;
-        let url = 'http://' + domen + '/calendar';
+        let domen = this._config.config().SPORT_DOMEN;
+        let root = this._config.config().SPORT_ROOT_PATH;
+        let url = 'http://' + domen;
+        if (root) {
+            url += '/' + root;
+        }
         return url
     }
 
-    get_vk_app_id(): string {
-        return this._config.config().VK_APP_ID;
-    }
 
     get_russian(sport): string {
         let lang = {
@@ -257,6 +284,23 @@ export class VkAuthComponent implements OnInit {
         return lang[sport] || sport;
     }
 
+    showEmptyListMessage(): boolean {
+        return (
+            !this.challenge_id &&
+            !this.member_id &&
+            this.challenges.length == 0 &&
+            this.current_cat == 'friends'
+        );
+    }
+
+    showEmptyListMyMessage(): boolean {
+        return (
+            !this.challenge_id &&
+            !this.member_id &&
+            this.challenges.length == 0 &&
+            this.current_cat == 'my'
+        );
+    }
 }
 
 @NgModule({

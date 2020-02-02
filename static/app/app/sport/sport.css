@@ -56,13 +56,13 @@
 }
 
 .sport-date {
-    font-size: small;
+    font-size: 0.81rem;
     color: rgb(88, 96, 106);
 }
 
 .sport-sport {
     cursor: pointer;
-    font-size: small;
+    font-size: 0.81rem;
     color: white;
     border-radius: 4px;
     padding-left: 3px;
@@ -212,4 +212,34 @@
 .sport-block-challenge {
     margin-left: 10px;
     margin-top: 10px;
+}
+
+.sport-location {
+    font-size: 0.81rem;
+    color: rgb(88, 96, 106);
+}
+
+.sport-ils-ad {
+    margin-top: 10px;
+    width: 300px;
+}
+
+.sport-ils-cap {
+    font-size: 0.9rem;
+    color: rgb(88, 96, 106);
+}
+
+.sport-distance {
+    font-size: 0.8rem;
+
+}
+
+.sport-distance-item {
+    color: rgb(88, 96, 106);
+}
+
+.sport-empty-list {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
 }

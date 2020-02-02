@@ -17,38 +17,69 @@
 
 <div class="sport-auth-categories">
     <div
-        [ngClass]="{'sport-auth-category-active': current_cat == 'my' && !user_info }"
+        [ngClass]="{'sport-auth-category-active': isTabActive('my') }"
         class="sport-auth-category"
         (click)="switch_category('my')"
     >Мои</div>
 
     <div
-        [ngClass]="{'sport-auth-category-active': current_cat == 'recommend' && !user_info }"
+        [ngClass]="{'sport-auth-category-active': isTabActive('recommend') }"
         class="sport-auth-category"
         (click)="switch_category('recommend')"
     >Рекомендации</div>
 
     <div
-        [ngClass]="{'sport-auth-category-active': current_cat == 'friends' && !user_info }"
+        [ngClass]="{'sport-auth-category-active': isTabActive('friends') }"
         class="sport-auth-category"
         (click)="switch_category('friends')"
     >Друзья</div>
 
     <div
-        [ngClass]="{'sport-auth-category-active': current_cat == 'all' && !user_info }"
+        [ngClass]="{'sport-auth-category-active': isTabActive('all') }"
         class="sport-auth-category"
         (click)="switch_category('all')"
     >Все</div>
 </div>
 
 <div class="sport-block-challenge" *ngIf="!!challenge_info">
-  <div class="sport-name">{{ challenge_info.name }}</div>
-  <div class="sport-locationn">{{ challenge_info.location }}</div>
-  <div class="sport-date">{{ challenge_info.date_str }}</div>
-  <div class="sport-distance">Дистанции:</div>
-  <ng-template ngFor let-it [ngForOf]="challenge_info.distance">
-      {{ it }}
-  </ng-template>
+    <div class="sport-name">
+        {{ challenge_info.name }}
+        <span
+            class="
+                sport-sport
+                {{ ' sport-sport-' + challenge_info.sport }}
+            "
+        >{{ get_russian(challenge_info.sport) }}</span>
+    </div>
+    <div
+        *ngIf="!!challenge_info.show_users.length"
+        class="sport-friends"
+    >
+        <span class="sport-friends-cap">Участвуют:</span>
+        <ng-template ngFor let-f [ngForOf]="challenge_info.show_users" let-i="index"
+        ><span
+            *ngIf="!!i"
+        >, </span><a
+            href="/user/{{f.id}}"
+            class="sport-user"
+        >{{f.name}}</a></ng-template>
+    </div>
+
+    <div class="sport-distance">
+        <span class="sport-distance-cap">Дистанции:</span>
+        <span class="sport-distance-item">{{challenge_info.distances}}</span>
+    </div>
+    <div class="sport-location">{{ challenge_info.location }}</div>
+    <div class="sport-date">{{ challenge_info.date_str }}</div>
+
+    <br /><br />
+    <div class="sport-ils-cap">Подготовка к соревнованиям:</div>
+    <a href="https://ufa.ilovesupersport.com/">
+        <img
+            src="/static/app/picture/ils.jpg"
+            class="sport-ils-ad"
+        />
+    </a>
 </div>
 
 <div class="sport-user-block" *ngIf="!!user_info">
@@ -56,7 +87,7 @@
         class="
             sport-menu-item
             sport-photo-block"
-        *ngIf="!!vk_photo"
+        *ngIf="!!user_info.photo"
     >
         <img class="sport-photo sport-friend-photo" src="{{ user_info.photo }}" />
     </div>
@@ -103,7 +134,7 @@
         >{{ get_russian(ch.sport) }}</span>
 
         <div
-            *ngIf="!!ch.friends.length"
+            *ngIf="!!ch.show_users.length"
             class="sport-friends"
         >
             <span class="sport-friends-cap">Участвуют:</span>
@@ -118,7 +149,7 @@
 
         <div class="sport-date-block">
             <span class="sport-date">{{ch.loc}}</span>
-            </div>
+        </div>
         <div class="sport-date-block">
             <span class="sport-date">{{ch.date_str}}</span>
         </div>
@@ -168,3 +199,10 @@
 
 </ng-template>
 
+<div *ngIf="showEmptyListMessage()" class="sport-empty-list">
+    Войдите через ВКонтакте и добавьте друзей
+</div>
+
+<div *ngIf="showEmptyListMyMessage()" class="sport-empty-list">
+    Отметьте в каких соревнованиях собираетесь участвовать
+</div>

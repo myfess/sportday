@@ -1,19 +1,21 @@
-import datetime
+# -*- coding: utf-8 -*-
+
 from collections import defaultdict
 
 from app import auth
 from app import mydb
 
-from app.z_challenge.friends import get_friends_challenges_map
-from app.z_challenge.const import translate_month_dict
+from app.z_challenge.friends import get_friends_challenges_map, get_friends_list
 from app.z_challenge.ext import cached_get_place_by_gps
 from app.z_challenge.rating import calc_rating
+from app.z_challenge.translate import distance_to_russian
+from app.z_challenge.utils import get_date_str
 
 
 def get_challenge_info(params, request):
     challenge_id = params.get('challenge_id')
     db = mydb.MyDB()
-    user = auth.MyUser(request)
+    # user = auth.MyUser(request)
     challenge_info = db.SqlQueryRecord(db.sql('sport/challenge_info'), {
         'challenge_id': challenge_id
     })
@@ -25,11 +27,20 @@ def get_challenge_info(params, request):
     ch['id'] = challenge_info['id']
     ch['date_str'] = get_date_str(ch.get('date'))
 
-    # Медлено работает когда стартов много
     ch['loc'] = cached_get_place_by_gps({
         'lt': ch['lt'],
         'lg': ch['lg']
     })
+
+    ch['location'] = None
+    if ch['loc']:
+        ch['location'] = ', '.join(ch['loc'])
+
+    distances = [distance_to_russian(d) for d in ch['distance']]
+    ch['distances'] = ', '.join(distances)
+
+    pts = challenges_particepants([ch])
+    ch['show_users'] = pts.get(challenge_id) or []
 
     return {
         'challenge_info': ch
@@ -37,11 +48,28 @@ def get_challenge_info(params, request):
 
 
 def challenge_action(params, request):
+    """
+    Set/unset relation between user and chellenge
+
+    Args:
+        params: dict
+            id: int, challenge id
+            action: str, action type (registered/like/delete/sell)
+            is_set: bool, set new status or delete old
+    """
+
     challenge_id = params.get('id')
     action = params.get('action')
     is_set = params.get('is_set')
 
-    user = auth.MyUser(request)
+    res = {
+        'challenge_id': challenge_id,
+    }
+
+    user = auth.MyUser(request, force=True)
+    if user.set_sid:
+        res['sid'] = user.set_sid
+
     member_id = user.get_user_id()
 
     if not member_id or not challenge_id:
@@ -61,13 +89,30 @@ def challenge_action(params, request):
         'part_type': part_type
     })
 
-    return {
-        'challenge_id': challenge_id,
-        'part_type': part_type
-    }
+    res['part_type'] = part_type
+    return res
 
 
 def get_challenges_list(params, request):
+    """
+    Get list of challenges with some filters
+
+    Args:
+        params: dict:
+            category: str, section of site (my, recommendations, friends, all)
+            filters: List[str], sport's filters
+            member_id: int, filter by user
+
+    Returns:
+        dict:
+            challenges: List[dict]:
+                id: int, challenge id
+                lt: float, latitude
+                lg: float, longitude
+                name: str, challenge name
+                sport: str, type of sport
+    """
+
     category = params.get('category')
     filters = params.get('filters')
     user = auth.MyUser(request)
@@ -75,48 +120,40 @@ def get_challenges_list(params, request):
 
     db = mydb.MyDB()
 
-    add_friends = True
+    qparams = {
+        'cte': '',
+        'join': '',
+        'where': '',
+        'args': {
+            'member_id': member_id,
+            'filters': filters
+        }
+    }
 
     if category == 'my':
         if not member_id:
             return {'challenges': []}
 
-        where = '''
+        qparams['where'] = '''
             AND p.part_type = 'registered'
             AND p.user_id = @member_id@
         '''
-        sql = db.sql('sport/challenges_list_my')
-        sql = sql.format(where=where)
-
-        rs = db.SqlQuery(sql, {
-            'member_id': member_id,
-            'filters': filters
-        })
     elif category == 'recommend':
-        where = '''
+        qparams['where'] = '''
             AND (
                 p.part_type IS NULL
                 OR
                 p.part_type = 'like'
             )
         '''
-        sql = db.sql('sport/challenges_list_my')
-        sql = sql.format(where=where)
-
-        rs = db.SqlQuery(sql, {
-            'member_id': member_id,
-            'filters': filters
-        })
     elif category == 'friends':
-        rs = db.SqlQuery(db.sql('sport/challenges_list_friends'), {
-            'member_id': member_id,
-            'filters': filters
-        })
-        add_friends = False
+        qparams['cte'] = db.sql('sport/challenges_list_friends_cte')
+        qparams['join'] = ' INNER JOIN chs ON (chs.challenge_id = ch.id) '
+        qparams['args']['friends'] = get_friends_list(member_id)
     elif category == 'user':
-        user_member_id = params.get('member_id')
+        qparams['args']['user_member_id'] = params.get('member_id')
 
-        where = '''
+        qparams['where'] = '''
             AND ch.id = ANY(ARRAY(
                 SELECT pu.challenge_id
                 FROM participations pu
@@ -125,48 +162,23 @@ def get_challenges_list(params, request):
                     AND pu.part_type = 'registered'
             ))
         '''
-        sql = db.sql('sport/challenges_list_my')
-        sql = sql.format(where=where)
 
-        rs = db.SqlQuery(sql, {
-            'member_id': member_id,
-            'user_member_id': user_member_id,
-            'filters': filters
-        })
-    else:
-        where = ''
-        sql = db.sql('sport/challenges_list_my')
-        sql = sql.format(where=where)
+    sql = db.sql('sport/challenges_list_my').format(
+        cte=qparams['cte'],
+        join=qparams['join'],
+        where=qparams['where']
+    )
+    rs = db.SqlQuery(sql, qparams['args'])
 
-        rs = db.SqlQuery(sql, {
-            'member_id': member_id,
-            'filters': filters
-        })
+    fri = get_friends_challenges_map(member_id)
 
     challenges = []
-
-    fri = None
-    if add_friends:
-        fri = get_friends_challenges_map(member_id)
-
     for r in rs:
         ch = r['data']
         ch['id'] = r['id']
         ch['part_type'] = r['part_type']
-
-        if add_friends:
-            ch['friends'] = fri.get(ch['id']) or []
-        else:
-            ch['friends'] = r.get('friends') or []
-
+        ch['friends'] = fri.get(ch['id']) or []
         ch['date_str'] = get_date_str(ch.get('date'))
-
-        # Медлено работает когда стартов много
-        # ch['loc'] = cached_get_place_by_gps({
-        #     'lt': ch['lt'],
-        #     'lg': ch['lg']
-        # })
-
         challenges.append(ch)
 
     if category == 'recommend':
@@ -191,21 +203,21 @@ def get_challenges_list(params, request):
     return {'challenges': challenges}
 
 
-def get_date_str(d):
-    if not d:
-        return None
-    dt = datetime.datetime.strptime(d, '%Y-%m-%d')
-    day = dt.strftime('%d').lstrip('0')
-    month = str(dt.strftime('%B'))
-    month = translate_month(month)
-    return '{} {} {}'.format(day, month, dt.strftime('%Y'))
-
-
-def translate_month(m):
-    return translate_month_dict[m]
-
-
 def challenges_particepants(challenges):
+    """
+    Get particepants of list of challenges
+
+    Args:
+        challenges: List[dict], list of challenge's objects
+
+    Returns:
+        dict: challenges
+            key: int, challenge id
+            value: List[dict]:
+                id: int, user id
+                name: str, user name from social network
+    """
+
     chs_ids = [ch['id'] for ch in challenges]
 
     db = mydb.MyDB()

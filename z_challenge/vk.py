@@ -68,7 +68,10 @@ def vk_auth(vk_code):
     params = {
         'client_id': consts.VK_APP_ID,
         'client_secret': consts.VK_SECRET,
-        'redirect_uri': 'http://{}/calendar'.format(consts.DOMEN),
+        'redirect_uri': 'http://{domen}{root}'.format(
+            domen=consts.SPORT_DOMEN,
+            root=('/' + consts.SPORT_ROOT_PATH if consts.SPORT_ROOT_PATH else '')
+        ),
         'code': vk_code
     }
 

@@ -27,7 +27,6 @@ def calc_rating(member_id, chs, request):
     dates = get_busy_days(member_id)
 
     ip = request.META.get('REMOTE_ADDR')
-    ip = '145.255.0.131'
     loc = cached_get_gps_by_ip({'ip': ip})
 
     for ch in chs:
@@ -95,7 +94,11 @@ def get_busy_days(member_id):
         AND p.user_id = @member_id@
     '''
     sql = db.sql('sport/challenges_list_my')
-    sql = sql.format(where=where)
+    sql = sql.format(
+        where=where,
+        cte='',
+        join=''
+    )
 
     rs = db.SqlQuery(sql, {
         'member_id': member_id,
@@ -116,6 +119,10 @@ def get_min_dates_diff(dt, dates):
 
 
 def get_date_diff_rating(diff):
+    if diff is None:
+        # If no busy days then user are ok with this date
+        return 10
+
     if diff == 0:
         return 0
     if diff < 2:
