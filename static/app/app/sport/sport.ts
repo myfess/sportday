@@ -32,6 +32,31 @@ export class VkAuthComponent implements OnInit {
 
     filters = [];
 
+    actions = [
+        {
+            'name': 'registered',
+            'img': 'reg.svg',
+            'text': 'Точно участвую'
+        },
+        {
+            'name': 'like',
+            'img': 'heart.svg',
+            'text': 'Слежу за событием'
+
+        },
+        {
+            'name': 'delete',
+            'img': 'block.svg',
+            'text': 'Не буду участвовать'
+        }
+        // ,
+        // {
+        //     'name': 'sell',
+        //     'img': 'sell.svg',
+        //     'text': 'Продам слот'
+        // }
+    ]
+
     constructor(
             private rpcService: UsatuRpcService,
             private _config: UsatuConfigService,
@@ -80,14 +105,12 @@ export class VkAuthComponent implements OnInit {
         this.getData();
     }
 
-
     setCookie(sid) {
         if (!sid) {
             return;
         }
         $.cookie('usatu_auth', sid, { expires : 365, path: '/' });
     }
-
 
     switch_category(cat) {
         this.user_info = null;
@@ -162,15 +185,6 @@ export class VkAuthComponent implements OnInit {
                 .then(res => this.challenges = res.challenges);
     }
 
-    set_challenge_part_type(challenge_id, action_type) {
-        for (let ch of this.challenges) {
-            if (ch.id == challenge_id) {
-                ch.part_type = action_type;
-                return;
-            }
-        }
-    }
-
     get_challenge_part_type(challenge_id) {
         for (let ch of this.challenges) {
             if (ch.id == challenge_id) {
@@ -199,6 +213,18 @@ export class VkAuthComponent implements OnInit {
             }
         }
 
+        if (this.challenge_id === challenge_id) {
+            old_part_type = this.challenge_info['part_type'];
+
+            if (old_part_type == action_type) {
+                is_set = false;
+                this.challenge_info['part_type'] = null;
+            } else {
+                // Set new status immediately
+                this.challenge_info['part_type'] = action_type;
+            }
+        }
+
         this.rpcService.call(
             'challenge_action',
             {
@@ -210,6 +236,33 @@ export class VkAuthComponent implements OnInit {
                     this.handlerSetPartType(res, challenge_id, old_part_type)
                 );
     }
+
+
+    handlerSetPartType(res, challenge_id, old_part_type) {
+        if (!!res.sid) {
+            this.setCookie(res.sid);
+        }
+
+        if (!res.challenge_id) {
+            // If update failed - return participation type back
+            this.set_challenge_part_type(challenge_id, old_part_type);
+        }
+    }
+
+
+    set_challenge_part_type(challenge_id, action_type) {
+        for (let ch of this.challenges) {
+            if (ch.id == challenge_id) {
+                ch.part_type = action_type;
+                return;
+            }
+        }
+
+        if (this.challenge_id === challenge_id) {
+            this.challenge_info['part_type'] = action_type;
+        }
+    }
+
 
     addFriend(friend_id) {
         let new_status = 'friend';
@@ -231,17 +284,6 @@ export class VkAuthComponent implements OnInit {
             return 'Удалить из друзей';
         } else {
             return 'Добавить в друзья';
-        }
-    }
-
-    handlerSetPartType(res, challenge_id, old_part_type) {
-        if (!!res.sid) {
-            this.setCookie(res.sid);
-        }
-
-        if (!res.challenge_id) {
-            // If update failed - return participation type back
-            this.set_challenge_part_type(challenge_id, old_part_type);
         }
     }
 

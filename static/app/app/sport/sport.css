@@ -7,7 +7,7 @@
 }
 
 .sport-user-name {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     margin-left: 10px;
 }
 
@@ -21,6 +21,7 @@
     padding: 5px;
     margin: 5px;
     display: inline-block;
+    font-size: 1.1rem;
 }
 
 .sport-auth-category-active {
@@ -56,13 +57,13 @@
 }
 
 .sport-date {
-    font-size: 0.81rem;
+    font-size: 0.8rem;
     color: rgb(88, 96, 106);
 }
 
 .sport-sport {
     cursor: pointer;
-    font-size: 0.81rem;
+    font-size: 0.8rem;
     color: white;
     border-radius: 4px;
     padding-left: 3px;
@@ -99,6 +100,7 @@
 
 .sport-act-delete {
     width: 24px;
+    cursor: pointer;
 }
 
 .sport-act-not-selected {
@@ -202,7 +204,7 @@
 }
 
 .sport-event-name {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: #2a5885;
     text-decoration: none;
@@ -215,7 +217,7 @@
 }
 
 .sport-location {
-    font-size: 0.81rem;
+    font-size: 0.8rem;
     color: rgb(88, 96, 106);
 }
 
@@ -229,17 +231,39 @@
     color: rgb(88, 96, 106);
 }
 
-.sport-distance {
-    font-size: 0.8rem;
-
-}
-
-.sport-distance-item {
-    color: rgb(88, 96, 106);
-}
-
 .sport-empty-list {
     margin-left: 10px;
     margin-top: 10px;
     font-size: 0.9rem;
+}
+
+.sport-action-item {
+    display: block;
+    margin-top: 10px;
+}
+
+.sport-action-text {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 2px;
+    margin-left: 5px;
+    font-size: 0.9rem;
+}
+
+
+.sport-name {
+    font-size: 1.2rem;
+}
+
+.sport-distance-cap {
+    font-size: 0.8rem;
+}
+
+.sport-distance {
+    font-size: 0.8rem;
+}
+
+.sport-distance-item {
+    font-size: 0.8rem;
+    color: rgb(88, 96, 106);
 }

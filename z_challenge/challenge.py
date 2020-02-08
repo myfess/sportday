@@ -15,9 +15,10 @@ from app.z_challenge.utils import get_date_str
 def get_challenge_info(params, request):
     challenge_id = params.get('challenge_id')
     db = mydb.MyDB()
-    # user = auth.MyUser(request)
+    user = auth.MyUser(request)
     challenge_info = db.SqlQueryRecord(db.sql('sport/challenge_info'), {
-        'challenge_id': challenge_id
+        'challenge_id': challenge_id,
+        'member_id':  user.get_user_id()
     })
 
     if not challenge_info:
@@ -26,6 +27,7 @@ def get_challenge_info(params, request):
     ch = challenge_info['data']
     ch['id'] = challenge_info['id']
     ch['date_str'] = get_date_str(ch.get('date'))
+    ch['part_type'] = challenge_info['part_type']
 
     ch['loc'] = cached_get_place_by_gps({
         'lt': ch['lt'],

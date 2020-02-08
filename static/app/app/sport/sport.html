@@ -72,6 +72,23 @@
     <div class="sport-location">{{ challenge_info.location }}</div>
     <div class="sport-date">{{ challenge_info.date_str }}</div>
 
+    <div class="sport-actions-challenge">
+        <ng-template ngFor let-act [ngForOf]="actions" let-i="index">
+            <div class="sport-action-item">
+                <img
+                    src="/static/app/picture/{{act.img}}"
+                    [ngClass]="{
+                        'sport-act-delete': true,
+                        'sport-act-not-selected': challenge_info.part_type != act.name
+                    }"
+                    (click)="action(challenge_info.id, act.name)"
+                />
+                <span class="sport-action-text">{{ act.text }}</span>
+            </div>
+        </ng-template>
+
+    </div>
+
     <br /><br />
     <div class="sport-ils-cap">Подготовка к соревнованиям:</div>
     <a href="https://ufa.ilovesupersport.com/">
@@ -155,44 +172,17 @@
         </div>
 
         <div class="sport-actions">
-            <img
-                src="/static/app/picture/reg.svg"
-                [ngClass]="{
-                    'sport-act-delete': true,
-                    'sport-act-not-selected': ch.part_type != 'registered'
-                }"
-                (click)="action(ch.id, 'registered')"
-            />
-
-            <img
-                src="/static/app/picture/heart.svg"
-                [ngClass]="{
-                    'sport-act-delete': true,
-                    'sport-act_left': true,
-                    'sport-act-not-selected': ch.part_type != 'like'
-                }"
-                (click)="action(ch.id, 'like')"
-            />
-
-            <img
-                src="/static/app/picture/block.svg"
-                [ngClass]="{
-                    'sport-act-delete': true,
-                    'sport-act_left': true,
-                    'sport-act-not-selected': ch.part_type != 'delete'
-                }"
-                (click)="action(ch.id, 'delete')"
-            />
-
-            <img
-                src="/static/app/picture/sell.svg"
-                [ngClass]="{
-                    'sport-act-delete': true,
-                    'sport-act_left': true,
-                    'sport-act-not-selected': ch.part_type != 'sell'
-                }"
-                (click)="action(ch.id, 'sell')"
-            />
+            <ng-template ngFor let-act [ngForOf]="actions" let-i="index">
+                <img
+                    src="/static/app/picture/{{act.img}}"
+                    [ngClass]="{
+                        'sport-act-delete': true,
+                        'sport-act_left': !!i,
+                        'sport-act-not-selected': ch.part_type != act.name
+                    }"
+                    (click)="action(ch.id, act.name)"
+                />
+            </ng-template>
         </div>
 
     </div>
